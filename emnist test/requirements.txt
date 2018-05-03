@@ -1,0 +1,6 @@
+python=3
+keras
+numpy
+h5py
+pillow
+tensorflow
