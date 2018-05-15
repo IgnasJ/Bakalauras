@@ -47,10 +47,19 @@
 
 Taigi, šiame baigiamojo bakalauro darbe panagrinėsime ranka rašyto teksto atpažinimo galimybes, panagrinėsime kokie yra pradinių duomenų šaltiniai, kokiu tikslumu pavyks atpažinti ranka parašytą tekstą.
 
+\section{Darbo uždaviniai}
+\begin{enumerate}
+    \item Susipažinti su konvoliucinių neuroninių tinklų taikymu ranka rašyto teksto atpažinimui
+    \item Susipažinti su konvoliucinių neuroninių tinklų architektūromis, įrankiais jų konstravimui;
+    \item Susirasti pradinių duomenų bazę;
+    \item Sukurti programos prototipą, kuri leistų panagrinėti konvoliucinių neuroninių tinklų apmokymo rezultatus, atpažinti ranka parašytą tekstą. 
+\end{enumerate}
+
 \section{Teorija}
 
 \subsection{Teksto atpažinimas}
-Kokios problemos kylą atpažistant tekstą, istorija, ką pavyko pasiekti, kokia įrankiai egzistuoja dabar.
+Teksto atpažinimo rūšys (Optical character recognition (OCR), Intelligent character recognition (ICR), Intelligent word recognition (IWR))
+Kokios problemos kylą atpažįstant tekstą, istorija, ką pavyko pasiekti, kokia įrankiai egzistuoja dabar.
 
 http://cs231n.stanford.edu/reports/2017/pdfs/810.pdf
 https://pdfs.semanticscholar.org/3c6d/38e010a3334ca76f3a5ddba31e2c540e9a18.pdf
@@ -60,9 +69,11 @@ https://towardsdatascience.com/handwriting-recognition-using-tensorflow-and-kera
 
 \subsection{Prižiūrimasis mokymas}
 
-Pagrindinė mašininio mokymosi forma konvoliuciniuose neuroniniuose tinkluose yra prižiūrimasis mokymasis (angl. supervised learning). Prižiūrimasis mokymas yra mašininio mokymo viena iš krypčių. Jis analizuoja pateiktus didelės apimties pradinius duomenų kiekius ir konstruoja numanomą funkciją, kurį gali būti naudojama naujų reikšmių klasifikavimui, kurias vėliau nustatytume naudojimo metu. Kiekvienai pradinių duomenų kategorijai yra priskiriamos etiketės (angl. labels). Tarkim, mūsų atveju, turint "A" ranka rašytos raidės pradinių duomenų grupę, suteikiame A etiketę, raidės "B" duomenų grupei suteikiame B etikete ir taip toliau. Mokymo metu, kaip įvestis yra naudojami vaizdai ir jų etiketės, mokymo rezultatas yra gaunamas 
+Pagrindinė mašininio mokymosi forma konvoliuciniuose neuroniniuose tinkluose yra prižiūrimasis mokymasis (angl. supervised learning). Prižiūrimasis mokymas yra mašininio mokymo viena iš krypčių. Šis metodas analizuoja pateiktus didelės apimties pradinius duomenų kiekius ir konstruoja numanomą funkciją, kurį gali būti naudojama naujų reikšmių klasifikavimui, kurias vėliau nustatytume naudojimo metu. Kiekvienai pradinių duomenų kategorijai yra priskiriamos etiketės (angl. labels). Tarkim, mūsų atveju, turint "A" ranka rašytos raidės pradinių duomenų grupę, suteikiame jiems A etiketę, raidės "B" duomenų grupei suteikiame B etikete ir taip toliau. Paprastai, prižiūrimojo mokymo metu yra naudojama didelės apimties duomenų grupės. Mokymo metu, kaip įvestis yra naudojami vaizdai ir jų etiketės. Mokymo iteracijų metu yra gaunami rezultatai, kiek tiksliai pradinių duomenų buvo tiksliai priskirti galutinei reikšmei, yra apskaičiuojamos klaidos tikimybės funkcijos, pakeičiami kintami parametrai, kurie yra neuronų svoriai, taip, kad būtų sumažinta klaidos tikimybė, duomenų klasifikacijai, kito žingsnio metu. Paprastai, tokio mokymo paremtose sistemose būna milijonai keičiamo svorių, kurie ieškomi apmokant neuroninį tinklą. Tam atlikti, praktikoje dažnai naudojama yra SGD (angl. stochastic gradient descent) procedūra, kurios vykdymo metu ir yra modifikuojami svoriai. Be stochastinio gradiento aproksimacijos metodo, taip pat yra naudojami gradiento aproksimacijos bei antros eilės gradiento aproksimacijos metodai.
 
-Šiai paradigmai yra naudojamos didelės apimties informacijos grupės (angl. data sets), kiekvienai objektų kategorijai, kurią norima vėliau nustatyti naudojimo metu. Kiekvienai kategorijai yra paskiriamos žymės (angl. labels), pavyzdžiui, objektų atpažinimui, giliajame mokyme, yra uždedamos tokios žymės, kaip namas, automobilis, žmogus ar gyvūnas bei jos yra susiejamos su duomenų rinkiniu. Mokymo metu, kaip įvesties duomenys yra perduodami vaizdai, mokymo iteracijos rezultatas yra vektorinės formos, vektoriniame rezultate yra gaunami sutapimo įvertinimo rezultatai su kiekviena kategorija, toliau yra apskaičiuojama klaidos tikimybės funkcija, atstumas tarp gauto vektoriaus bei laukiamo šablono. Gavus atstumą, neuroniniame tinkle yra pakeičiami modifikuojamieji parametrai, vadinami svoriais, taip, kad būtų sumažinta klaidos tikimybė, kategorijų identifikavimui, kito žingsnio metu. Tipinėje giliu mokymu paremtoje sistemoje būna šimtai milijonų modifikuojamų svorių bei pažymėtų pavyzdžių, reikalingų mašinos apmokymams. Praktikoje yra labai populiari procedūra, vadinama stochastinio gradiento aproksimacija (angl. stochastic gradient descent), kurios metu ir yra modifikuojami svoriai. Šis procesas paprastai yra kartojamas tol, kol klaidos tikimybės sustoja mažėti [4]. Procesas vadinamas stochastiniu, todėl, kad kiekvienai mokymo iteracijai yra imamas atsitiktinis pavyzdys. Kitaip tariant, esant dideliam pavyzdinių duomenų skirtų mokymui kiekiui, reikiamas tikslumas yra paskaičiuojamas, net nepanaudojus visų mokymui skirtų pavyzdžių [7]. Be stochastinio gradiento aproksimacijos metodo, taip pat yra naudojami gradiento aproksimacijos bei antros eilės gradiento aproksimacijos metodai. Stochastinio gradiento aproksimacijos metodas, siekiamą tikslumą pasiekia kur kas greičiau nei kiti naudojami gradientų aproksimacijai skirti algoritmai, tačiau jis yra labai priklausomas nuo atsitiktinių duomenų [7].  Prižiūrimo mokymosi pabaigoje, yra tikrinamas neuroninio tinklo darbo greitis bei tikslumas, naudojant kitą, konvoliuciniam neuroniniam tinklui anksčiau nematytą, duomenų grupę, vadinamą, testų grupe (angl. test set). Šio etapo metu yra tikrinamos apmokytos mašinos generalizacijos savybės ir siekiama gauti kuo praktiškesnius (angl. sensible) rezultatus, naudojant duomenų grupės elementus, kurių apmokoma mašina nebuvo naudojusi apmokymų metu. Praktiškumas, universalumas rezultatams yra labai svarbus veiksnys. Pavyzdžiui vaizdų atpažinime, gali skirtis ieškomo objekto nuotraukoje pozicija, pasisukimo kampas, apšvietimas, tuo tarpu balso atpažinimo metu gali skirtis kalbėjimo manieros, akcentai ar pašalinis triukšmas
+[O. Bousquet and L. Bottou, "The Tradeoffs of Large Scale Learning," in Advances in Neural Information Processing Systems 20, Curran Associates, Inc., 2008. ]
+ 
+Prižiūrimojo mokymosi pabaigoje yra tikrinamas apmokyto neuroninio tinklo tikslumas, naudojant kitą, neuroniniam tinklui prieš tai nematytą, testinę duomenų grupę, kurios dalys nebuvo panaudotos pradinių duomenų rinkinyje. Universalumas rezultatams yra labai svarbus veiksnys. Pavyzdžiui ranka rašyto teksto atpažinime, gali skirtis ieškomos raidės pozicija vaizde (pavyzdžiui ne centre), raidės pavirtimo kampas, pašalinis triukšmas fone.
 
 Problemų sprendimo žingsniai naudojant prižiūrimąjį mokymą:
 \begin{enumerate}
@@ -74,19 +85,18 @@ Problemų sprendimo žingsniai naudojant prižiūrimąjį mokymą:
   \item Įvertinti apmokyto modelio tikslumą. Po parametrų sureguliavimo ir mokymosi rezultatų tikslumas turi būti matuojamas testinių duomenų rinkiniu, kuris nebuvo naudojamas pradinių duomenų rinkinyje.
 \end{enumerate}
 
-\subsection{Neuroniniai tinklai}
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.5]{img/MLP}
-    \caption{Paveikslėlio pavyzdys}
-    \label{img:mlp}
-\end{figure}
-
 \subsection{Konvoliuciniai neuroniniai tinklai}
 Šiuo metu viena pagrindinių giliojo mokymo panaudojimo sričių yra vaizdinių objektų atpažinimas. Nuolatos yra vykdomi tyrimai, kaip pagerinti mašininio mokymosi metodus, taip pat naudoti vis didesnes duomenų grupes, naudoti tinkamesnes technikas, saugantis nuo duomenų perderinimo (angl. overfitting) [8]. Jeigu tinklo mokymo metu yra pasiekiamas didelis tikslumas, tačiau patikros tikslumas toliau sekančių iteracijų metu išlieka žemas, tai reiškia, jog neuroninis tinklas yra perderinamas – neuroninis tinklas mokosi tokius objekto požymius, kurie nepadeda ar trukdo klasifikuoti objektus į klases. Perderinimo problema yra sprendžiama stabdant mokymo procesą, kai mokymo duomenų grupės naudojimo metu, neuroninio tinklo klasifikavimo tikslumas pradeda blogėti tolesnių iteracijų metu, taip pat yra naudojamos nuobaudos neuroninio tinko svoriams bei išmetimo operacijos. Konvoliucinai neuroniniai tinklai yra specialus duomenų apdorojimo būdas, įsivaizduojamas, kaip tinklelio tipo topologija. Pavadinimas, konvoliuciniai neuroniniai tinklai nusako, kad tinklo apmokymo metu yra bent vieną kartą naudojama matematinė operacija, vadinama konvoliucija [3]. Konvoliuciniai neuroniniai tinklai naudojasi bendrais duomenų svoriais, taip mažindami parametrų, kuriuos kompiuteris turi išmokti iš duomenų, kiekį, taip pat yra sumažinamas mokymo laikas bei sunaudojami ištekliai neuroninio tinklo apmokymo procesui. Tarp neuroniniuose tinkluose naudojamų parametrų vienas svarbiausių yra vadinamas mokymosi greičiu (angl. learning rate), kurio pasirinkimas daro įtaką efektyviam pajėgumo kontroliavimui, optimizavimo greičiui. Efektyvus neuroninio tinklo pajėgumas yra pats geriausiais, kai mokymosi greitis yra teisingiausiai parenkamas optimizavimo problemai spręsti. Esant mažam mokymosi greičiui yra pasiekimas didžiausias tikslumas, tačiau yra ilginamas mokymosi laikas. Pasirinkus per mažą tinklo mokymosi greitį optimizavimui, mokymosi procesas ne tik užtrunka ilgiau, siekiant optimalaus rezultato, bet gali įstrigti, dėl didelio mokymosi klaidų kiekio [3]. Taip pat šiuose neuroniniuose tinkluose yra naudojami telkimo (angl. pooling) sluoksniai, tam kad būtų sumažinami gaunamos informacijos matmenys, jais naudojantis architektūra yra paverčiama į mažiau jautrią įvairių veiksnių poveikiui perduodamuose duomenyse [9]. Siekiant įgyvendinti išsikeltus uždavinius, yra modeliuojamos sluoksnių hierarchijos bei duomenų apdorojimui reikalingos savybės, tokios kaip filtravimo tinklelio dydis, filtro žingsnio dydis bei išeigos gylis. Dabartiniuose neuroniniuose tinkluose į klasifikatorių yra perduodama visų prieš tai buvusių sluoksnių išeiga, grafo tipo rinkinys. Bendra tinklo kūrimo idėja yra į kiekvieną sekantį sluoksnį, perduodant prieš tai buvusių sluoksnių rinkinį. Naudojantis šia metodika tinklas paruošiamas atpažinti ne tik aukšto lygmens (angl. high-level) požymius, bet ir mažas, tikslias detales, filtravimo būdu atskiriant iš duomenų žemo lygmens (angl. low-level) požymius, kurie yra mažiau kintantys tam tikrose klasėse, taip aptinkant pagrindinius klasę nusakančius motyvus [2]. Pagrindinis sistemų, naudojančių neuroninius tinklus giliajam mokymui tikslas yra kuo aukštesnis testavimui skirto duomenų rinkinio rezultatas. Esant žemai mokymo klaidos tikimybei, siekiant pagerinti patį pagrindinį rezultatą, galima surinkus, transformavus daugiau duomenų. [3]
 
-\subsubsection{Konvoliucija}
-Kiekviename konvoliuciniame neuroniniame tinkle yra bent viena konvoliucijos operacija [3].  Šios operacijos rezultatas dažnai yra vadinamas požymių žemėlapiu (angl. feature map). Konvoliucijos sluoksnio parametrai yra sudaryti iš mokomųjų filtrų (angl. learnable filters) rinkinio. Filtro pozicijos keitimo metu yra skaičiuojama skaliarinė filtro elemento bei perduotų duomenų svorių sandauga, taip yra sukuriamas dviejų dimensijų dydžio aktyvacijos žemėlapis. Visas konvoliucinio sluoksnio rezultatas – požymių žemėlapių rinkinys Šių aktyvacijos žemėlapių dėka neuroninis tinklas yra išmokomas atpažinti tam tikrus požymius, kaip objektų briaunas,  regionus, kuriuose dominuoja tos pačios sąvybės [3]. 
+\subsubsection{Konvoliucijos operacija}
+Kiekviename konvoliuciniame neuroniniame tinkle yra bent viena konvoliucijos operacija.  Šios operacijos rezultatas dažnai yra vadinamas požymių žemėlapiu (angl. feature map). Konvoliucijos sluoksnio parametrai yra sudaryti iš mokomųjų filtrų (angl. learnable filters) rinkinio. Filtro pozicijos keitimo metu yra skaičiuojama skaliarinė filtro elemento bei perduotų duomenų svorių sandauga, taip yra sukuriamas dviejų dimensijų dydžio aktyvacijos žemėlapis. Visas konvoliucinio sluoksnio rezultatas – požymių žemėlapių rinkinys Šių aktyvacijos žemėlapių dėka neuroninis tinklas yra išmokomas atpažinti tam tikrus požymius, kaip objektų briaunas,  regionus, kuriuose dominuoja tos pačios sąvybės [3]. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=1.5]{img/konvoliucija.png}
+    \caption{Konvoliucijos operacija}
+    \label{img:emnist_sudarymas}
+\end{figure}
 
 \subsubsection{ReLU normalizacijos funkcija}
 Po kiekvieno konvoliucijos sluoksnio, neuroniniuose tinkluose yra naudojamos aktyvacijos funkcijos. Kompiuteriniuose vaizduose, siekiant duomenų normalizacijos, populiariausia yra ReLU aktyvavimo funkcija, kuri yra įvardijama, kaip geriausiai tinkanti neuroninio tinklo mokymo efektyvumui. Ši funkcija yra naudojama, kaip max(0, x) [10], x šiuo atveju yra konvoliucijos operacijos rezultatas dvimatės matricos elementui [14]. Kitaip tariant, visos, neigiamos požymių žemėlapio reikšmės, po konvoliucijos operacijos, yra paverčiamos į 0. 
@@ -96,23 +106,23 @@ Pagrinde konvoliuciniuose neuroniniuose tinkluose yra naudojamos maksimalaus tel
 \subsubsection{Pilnai sujungti sluoksniai}
 Pilnai sujungti sluoksniai yra labai panašūs į konvoliucinius sluoksnius. Vienintelis jų skirtumas yra toks, kad neuronai, konvoliuciniuose sluoksniuose yra sujungti tik su lokaliais regionais pradiniuose duomenyse bei jie tarpusavyje  naudojasi padalintais parametrais. Abiejuose sluoksniuose yra naudojama skaliarinė sandauga. Taip pat pilnai sujungtą sluoksnį galima konvertuoti į konvoliucinį sluoksnį. Pavyzdžiui, jeigu duomenys į pilnai sujungtą sluoksnį perduodami 7x7x512 dimensijomis, o siekiamas - 4096 neuronų skaičius pilnai sujungtame sluoksnyje, rezultatui pasiekti galima naudoti konvoliucijos operaciją, kaip parametrus naudojant 7x7 dimensijų dydžio filtrą, 1 pikselio dydžio filtro žingsnį bei išeities (požymių žemėlapio) gylį lygų 4096 [15]. 
 
-\section{Konvoliucinių neuroninių tinklų architektūros}
+\subsection{Konvoliucinių neuroninių tinklų architektūros}
 
 Žemiau esančiuose skyriuose panagrinėsime naudojamas konvoliucinių neuroninių tinklų architektūras.
 
-\subsection{LeNet}
+\subsubsection{LeNet}
 
 LeNet architektūra pirmą kartą buvo pristatyta 1998 metais. Ši architektūra buvo pritaikyta skaitiniam atpažinimui. Kadangi tuo metu grafikos apdorojimo įrenginiai iš tolo neprilygo dabartiniams produktams, buvo  labai svarbu, kad apdorojant sluoksniuose esančius svorius bei juos saugant  užtektų turimų išteklių. Kaip sprendimas buvo pasiūlyta 7 sluoksnių architektūra (žr. 4 pav.), kurios pradiniai duomenys, vaizdai  yra 32x32 dydžio. Ši architektūra buvo skirta skaitinių vaizdinių identifikavimui, tokių, kaip pašto kodų ar skaičių atpažinimui. Pagrindinė šio neuroninio tinklo architektūros idėja buvo – po kiekvieno konvoliucinio sluoksnio, turi būti telkimo sluoksnis, todėl šioje architektūroje yra 2 konvoliuciniai, 2 maksimalaus telkimo bei 3 pilnai sujungti sluoksniai [15].  Y. LeCun, "Gradient-based learning applied to document recognition," in Proceedings of the IEEE 86.11, 1998.  
 [
 
 https://www.ibm.com/developerworks/library/cc-machine-learning-deep-learning-architectures/index.html
 
-\subsection{AlexNet}
+\subsubsection{AlexNet}
 AlexNet architekūra buvo pristatyta 2012 metais rengtame ImageNet konkurse, kurio tikslas buvo sukurti sprendimą, kurio dėka būtų suklasifikuojami 1.2 milijono didelės raiškos vaizdų į 1000 skirtingų klasių. Šios architektūros idėja yra pakeisti patobulinti LeNet kurtą architektūrą, įrodant, kad telkimo operacija neturi būti atliekama kas kartą po konvoliucijos operacijos. AlexNet architektūrą iš viso sudaro 11 sluoksnių su svoriais, iš jų 5 yra konvoliuciniai sluoksniai, 3 – maksimalaus kaupimo sluoksniai, o likę 3 – pilnai sujungti sluoksniai. Kaip pradinis duomuo buvo perduodamas 224x224x3 dydžio paveikslėlis, su 96 11x11x3 dydžio filtrais (angl. kernel) su 4 pikselių didžio filtro žingsniu. [8]  
  
  A. Krizhevsky, I. Sutskever and G. E. Hinton, "ImageNet Classification with Deep Convolutional Neural Networks," Curran Associates, Inc., 2012, pp. 1097-1105
  
-\subsection{ResNet}
+\subsubsection{ResNet}
 
 \section{Panaudoti įrankiai}
 \subsection{Vaizdo apdorimas}
