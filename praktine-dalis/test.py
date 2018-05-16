@@ -1,16 +1,20 @@
 # Mute tensorflow debugging information on console
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-import cv2
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
-from scipy.misc import imsave, imread, imresize
+import sys
+import warnings
+
+if not sys.warnoptions:
+    warnings.simplefilter("ignore")
+
+import cv2
+from keras.models import model_from_yaml
+from scipy.misc import imread, imresize
 import numpy as np
 import argparse
-from keras.models import model_from_yaml
-import re
-import base64
 import pickle
-import heapq
+
 
 def sort_contours(cnts, method="left-to-right"):
 	# initialize the reverse flag and sort index
@@ -88,6 +92,9 @@ im2,ctrs, hier = cv2.findContours(img_dilation.copy(), cv2.RETR_EXTERNAL, cv2.CH
 #sorted_ctrs = sorted(ctrs, key=lambda ctr: cv2.boundingRect(ctr)[0])
 sorted_ctrs, _ = sort_contours(ctrs)
 result = ''
+
+print('Atpažintas tekstas: ' + '\n')
+
 for i, ctr in enumerate(sorted_ctrs):
     # Get bounding box
     x, y, w, h = cv2.boundingRect(ctr)

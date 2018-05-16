@@ -19,7 +19,7 @@ def load_model(bin_dir):
     model.load_weights('%s/model.h5' % bin_dir)
     return model
 
-def predict(image_name):
+def predict(image_name, nr):
     
     # read parsed image back in 8-bit, black and white mode (L)
     x = imread(image_name, mode='L')
@@ -33,8 +33,8 @@ def predict(image_name):
     # Predict from model
     out = model.predict(x)
     # Generate response
-    r1 = {'prediction': chr(mapping[(int(np.argmax(out, axis=1)[0]))]), 'confidence': str(max(out[0]) * 100)[:6]}
-    print(r1)
+    r1 = {'spejimas': chr(mapping[(int(np.argmax(out, axis=1)[0]))]), 'tikslumas': str(max(out[0]) * 100)[:6]}
+    print(nr+ " " + str(r1))
     
 
 # Parse optional arguments
@@ -50,14 +50,14 @@ img = cv2.imread(args.file)
 width = img.shape[1]	#current image's width
 height = img.shape[0]	#current image's height 
 
-print "width : %d\theight : %d"%(width,height)
+print ("width: "+ str(width) + "\theight: " + str(height))
 r = 28/img.shape[0]#aspect_ration
-print "ratio: " + str(r)
+print ("ratio: " + str(r))
 #ie., here we knows the new images's height so we have to keep the aspect ratio and find new image's width
 dim = (int(r*img.shape[1]),28)
 resized = cv2.resize(img,dim,interpolation=cv2.INTER_AREA)
-
+cv2.imwrite('resized4frames.jpg', cv2.bitwise_not(resized))
 for x in range(resized.shape[1]-28):
     crop_img = resized[0:27, x:x+27] # Crop from {x, y, w, h } => {y:h, x:w}
-    cv2.imwrite('raides/'+str(x)+'.jpg', cv2.bitwise_not(crop_img))    
-    predict('raides/'+str(x)+'.jpg')
+    cv2.imwrite('frames/'+str(x)+'.jpg', cv2.bitwise_not(crop_img))    
+    predict('frames/'+str(x)+'.jpg', str(x))
